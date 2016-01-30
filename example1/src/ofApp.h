@@ -24,5 +24,6 @@ class ofApp : public ofBaseApp{
     
     ofxOscilloscope * myScope;
     vector<float> sineSignal;
+    vector<float> cosineSignal;
 		
 };

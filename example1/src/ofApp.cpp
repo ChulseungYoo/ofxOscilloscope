@@ -2,15 +2,18 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofBackground(ofColor::black);
     ofSetFrameRate(30);
     myScope = new ofxOscilloscope(ofRectangle(0, 0, ofGetWidth(),ofGetHeight()));
     myScope->assignSignals("sine signal", &sineSignal, ofColor::red);
+    myScope->assignSignals("cosine signal", &cosineSignal, ofColor::green);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     static float i = 0;
     sineSignal.insert(sineSignal.begin(), sin(i+=0.1));
+    cosineSignal.insert(cosineSignal.begin(), cos(i));
     myScope->update();
 }
 
