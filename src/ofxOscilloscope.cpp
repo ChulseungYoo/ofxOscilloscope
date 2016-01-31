@@ -15,8 +15,7 @@ void ofxOscilloscope::update()
         AutoScale();
     }
     CalcGraph();
-    
-    
+    CalcCursorValue();
 }
 
 void ofxOscilloscope::draw()
@@ -35,6 +34,15 @@ void ofxOscilloscope::draw()
         ofSetColor(colors[signal.first]);
         graphs[signal.first].draw();
     }
+    
+    ofPoint cursorPosition = ofPoint(ofGetMouseX(), ofGetMouseY());
+    for (auto cursorValue:cursorValues)
+    {
+        ofSetColor(colors[cursorValue.first]);
+        ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, 25));
+    }
+    
+    
     ofPopStyle();
 }
 
@@ -108,7 +116,22 @@ void ofxOscilloscope::DrawLabels()
     ofPopStyle();
 }
 
-
+void ofxOscilloscope::CalcCursorValue()
+{
+    ofPoint cursorPosition = ofPoint(ofGetMouseX(), ofGetMouseY());
+    int cursorPointingIndex = (signalRectangle.getMaxX() - cursorPosition.x) / (signalRectangle.getWidth() / windowSize);
+    if (signalRectangle.inside(cursorPosition))
+    {
+        for(auto signal:signals)
+        {
+            if (signal.second->size() > cursorPointingIndex)
+            {
+                cursorValues[signal.first] = signal.second->at(cursorPointingIndex);
+            }
+        }
+    }
+    
+}
 
 
 

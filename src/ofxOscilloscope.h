@@ -15,7 +15,7 @@
 class ofxOscilloscope{
 public:
     ofxOscilloscope(ofRectangle signalRect)
-    : bDrawGrid(true), bAutoScale(true), rangeMin(-10), rangeMax(10), windowSize(100), offset(0), signalRectangle(signalRect), backgroundColor(ofColor::black), gridColor(ofColor::gray), gridInterval(50)
+    : bShowCursorValue(true), bDrawGrid(true), bAutoScale(true), rangeMin(-10), rangeMax(10), windowSize(100), offset(0), signalRectangle(signalRect), backgroundColor(ofColor::black), gridColor(ofColor::gray), gridInterval(50)
     {
         
     }
@@ -29,10 +29,12 @@ private:
     map<string, vector<float>*> signals;
     map<string, ofColor> colors;
     map<string, ofPolyline> graphs;
+    map<string, float> cursorValues;
     ofColor backgroundColor;
     ofColor gridColor;
     ofRectangle signalRectangle;
     
+    bool bShowCursorValue;
     bool bDrawGrid;
     bool bAutoScale;
     float rangeMin;
@@ -44,6 +46,7 @@ private:
     void AutoScale();
     void CalcGraph();
     void valueToRect();
+    void CalcCursorValue();
     void DrawGrid();
     void DrawRange();
     void DrawLabels();
