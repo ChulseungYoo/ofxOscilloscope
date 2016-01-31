@@ -24,6 +24,12 @@ void ofxOscilloscope::draw()
     ofPushStyle();
     ofSetColor(backgroundColor);
     ofDrawRectangle(signalRectangle);
+    if (bDrawGrid)
+    {
+        DrawGrid();
+    }
+    DrawRange();
+    DrawLabels();
     for (auto signal:signals)
     {
         ofSetColor(colors[signal.first]);
@@ -66,7 +72,41 @@ void ofxOscilloscope::CalcGraph()
     }
 }
 
+void ofxOscilloscope::DrawGrid()
+{
+    ofPoint leftTop = signalRectangle.getTopLeft();
+    ofPoint rightBottom = signalRectangle.getBottomRight();
+    
+    ofPushStyle();
+    ofSetColor(gridColor);
+    for (float x = leftTop.x; x < rightBottom.x; x+= gridInterval)
+    {
+        ofDrawLine(ofPoint(x, leftTop.y), ofPoint(x, rightBottom.y));
+    }
+    for (float y = leftTop.y; y < rightBottom.y; y+= gridInterval)
+    {
+        ofDrawLine(ofPoint(leftTop.x, y), ofPoint(rightBottom.x, y));
+    }
+    ofPopStyle();
+}
 
+void ofxOscilloscope::DrawRange()
+{
+    ofDrawBitmapStringHighlight("Max : " + ofToString(rangeMax), signalRectangle.getTopLeft() + ofPoint(10, 20));
+    ofDrawBitmapStringHighlight("Min : " + ofToString(rangeMin), signalRectangle.getBottomLeft() + ofPoint(10, -5));
+}
+
+void ofxOscilloscope::DrawLabels()
+{
+    ofPushStyle();
+    ofPoint pos = signalRectangle.getBottomLeft() + ofPoint(0, -5);
+    for (auto signal:signals)
+    {
+        ofSetColor(colors[signal.first]);
+        ofDrawBitmapString(signal.first, pos += ofPoint(100, 0));
+    }
+    ofPopStyle();
+}
 
 
 
