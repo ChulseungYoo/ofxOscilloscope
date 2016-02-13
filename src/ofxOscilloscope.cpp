@@ -63,6 +63,23 @@ void ofxOscilloscope::AutoScale()
 {
     float localMaximum = 0;
     float localMinimum = 0;
+    for (auto signal:signals)
+    {
+        for (int index = offset; ((index < windowSize) && (index < signal.second->size())); ++index)
+        {
+            if(localMaximum < signal.second->at(index))
+            {
+                localMaximum = signal.second->at(index);
+            }
+            else if (localMinimum > signal.second->at(index))
+            {
+                localMinimum = signal.second->at(index);
+            }
+        }
+    }
+    
+    rangeMax = localMaximum;
+    rangeMin = localMinimum;
     
 }
 
