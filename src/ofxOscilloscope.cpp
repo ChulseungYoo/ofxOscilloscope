@@ -43,6 +43,12 @@ void ofxOscilloscope::draw()
     }
     
     
+    
+    ofDrawLine(cursorPosition.x, signalRectangle.getMinY(), cursorPosition.x, signalRectangle.getMaxY());
+    
+    ofNoFill();
+    ofSetColor(gridColor);
+    ofDrawRectangle(signalRectangle);
     ofPopStyle();
 }
 
@@ -55,6 +61,8 @@ void ofxOscilloscope::assignSignals(string label, vector<float> *signal, ofColor
 
 void ofxOscilloscope::AutoScale()
 {
+    float localMaximum = 0;
+    float localMinimum = 0;
     
 }
 

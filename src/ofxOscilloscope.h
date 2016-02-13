@@ -15,15 +15,23 @@
 class ofxOscilloscope{
 public:
     ofxOscilloscope(ofRectangle signalRect)
-    : bShowCursorValue(true), bDrawGrid(true), bAutoScale(true), rangeMin(-10), rangeMax(10), windowSize(100), offset(0), signalRectangle(signalRect), backgroundColor(ofColor::black), gridColor(ofColor::gray), gridInterval(50)
+    : bShowCursorValue(true),
+    bDrawGrid(true),
+    bAutoScale(true),
+    rangeMin(-10),
+    rangeMax(10),
+    windowSize(100),
+    offset(0),
+    signalRectangle(signalRect),
+    backgroundColor(ofColor::black),
+    gridColor(ofColor::gray),
+    gridInterval(50)
     {
         
     }
     void update();
     void draw();
-    
     void assignSignals(string label, vector<float>* signal, ofColor color);
-    
     
 private:
     map<string, vector<float>*> signals;
