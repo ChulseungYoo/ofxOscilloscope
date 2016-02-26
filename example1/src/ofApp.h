@@ -28,5 +28,10 @@ class ofApp : public ofBaseApp{
     vector<float> cosineSignal;
     
     bool bPaused;
+    
+    //datgui
+    ofxDatGui *gui;
+    
+    void onButtonEvent(ofxDatGuiButtonEvent e);
 		
 };

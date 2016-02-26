@@ -8,6 +8,12 @@ void ofApp::setup(){
     myScope = new ofxOscilloscope(ofRectangle(0, 0, ofGetWidth(),(ofGetHeight() / 2)));
     myScope->assignSignals("sine signal", &sineSignal, ofColor::red);
     myScope->assignSignals("cosine signal", &cosineSignal, ofColor::green);
+    
+    gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
+    gui->addToggle("Pause");
+    gui->onButtonEvent(this, &ofApp::onButtonEvent);
+    gui->addHeader(":: Drag Me To Reposiiton ::");
+    gui->addFooter();
 }
 
 //--------------------------------------------------------------
@@ -15,8 +21,8 @@ void ofApp::update(){
     static float i = 0;
     if (!bPaused)
     {
-        sineSignal.insert(sineSignal.begin(), sin(i+=0.1));
-        cosineSignal.insert(cosineSignal.begin(), cos(i));
+        sineSignal.push_back(sin(i+=0.05));
+        cosineSignal.push_back(cos(i));
     }
     myScope->update();
 }
@@ -28,16 +34,12 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    myScope->AddMarker(ofToString(key), ofColor::red);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-    if (' ' == key)
-    {
-        bPaused = !bPaused;
-    }
-
+    
 }
 
 //--------------------------------------------------------------
@@ -84,3 +86,18 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
+void ofApp::onButtonEvent(ofxDatGuiButtonEvent e)
+{
+    if (bPaused)
+    {
+        e.target->setLabel("Pause");
+        bPaused = false;
+    }
+    else
+    {
+        e.target->setLabel("Play");
+        bPaused = true;
+    }
+}
+
