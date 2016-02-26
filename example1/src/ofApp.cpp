@@ -34,7 +34,22 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    myScope->AddMarker(ofToString(key), ofColor::red);
+    ofColor color = ofColor::red;
+    if ((key >= '0') && (key < '9'))
+    {
+        color = ofColor::green;
+    }
+    else if ((key >= 'a') && (key <= 'z'))
+    {
+        color = ofColor::yellow;
+    }
+    else if ((key >= 'A') && (key <= 'Z'))
+    {
+        color = ofColor::blue;
+    }
+    
+    myScope->AddMarker(ofToString(key), color);
+    
 }
 
 //--------------------------------------------------------------
