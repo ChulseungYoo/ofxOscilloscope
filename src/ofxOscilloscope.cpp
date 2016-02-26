@@ -42,10 +42,8 @@ void ofxOscilloscope::draw()
         ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, 25));
     }
     
-    
-    
     ofDrawLine(cursorPosition.x, signalRectangle.getMinY(), cursorPosition.x, signalRectangle.getMaxY());
-    
+    DrawMarkers();
     ofNoFill();
     ofSetColor(gridColor);
     ofDrawRectangle(signalRectangle);
@@ -89,7 +87,7 @@ void ofxOscilloscope::CalcGraph()
     {
         int count = 0;
         graphs[signal.first].clear();
-        for (vector<float>::iterator it = signal.second->begin(); it != signal.second->end(); ++it)
+        for (vector<float>::reverse_iterator it = signal.second->rbegin(); it != signal.second->rend(); ++it)
         {
             if (count++ < windowSize)
             {
@@ -151,22 +149,40 @@ void ofxOscilloscope::CalcCursorValue()
         {
             if (signal.second->size() > cursorPointingIndex)
             {
-                cursorValues[signal.first] = signal.second->at(cursorPointingIndex);
+                cursorValues[signal.first] = signal.second->at(signal.second->size() - cursorPointingIndex);
             }
         }
     }
     
 }
 
+void ofxOscilloscope::AddMarker(string label, ofColor color)
+{
+    tMarker aMarker;
+    aMarker.color = color;
+    aMarker.label = label;
+    int index = 0;
+    if (!signals.empty())
+    {
+        markers.emplace(signals.begin()->second->size(), aMarker);
+    }
+}
 
-
-
-
-
-
-
-
-
+void ofxOscilloscope::DrawMarkers()
+{
+    ofPushStyle();
+    if (!markers.empty())
+    {
+        for (map<int, tMarker>::reverse_iterator rit = markers.rbegin(); ((rit != markers.rend()) && (rit->first > (signals.begin()->second->size() - windowSize))); ++rit)
+        {
+            ofSetColor(rit->second.color);
+            float xPosition = ofMap(rit->first, signals.begin()->second->size(), signals.begin()->second->size() - windowSize, signalRectangle.getMaxX(), signalRectangle.getMinX());
+            ofDrawLine(ofPoint(xPosition, signalRectangle.getMinY()), ofPoint(xPosition, signalRectangle.getMaxY()));
+            ofDrawBitmapStringHighlight(rit->second.label, ofPoint(xPosition, signalRectangle.getMinY() + 20));
+        }
+    }
+    ofPopStyle();
+}
 
 
 

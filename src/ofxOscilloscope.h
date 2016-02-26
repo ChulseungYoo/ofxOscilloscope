@@ -12,6 +12,11 @@
 #include <stdio.h>
 #include "ofMain.h"
 
+typedef struct marker{
+    string label;
+    ofColor color;
+}tMarker;
+
 class ofxOscilloscope{
 public:
     ofxOscilloscope(ofRectangle signalRect)
@@ -32,12 +37,14 @@ public:
     void update();
     void draw();
     void assignSignals(string label, vector<float>* signal, ofColor color);
+    void AddMarker(string markerLabel, ofColor color);
     
 private:
     map<string, vector<float>*> signals;
     map<string, ofColor> colors;
     map<string, ofPolyline> graphs;
     map<string, float> cursorValues;
+    map<int, tMarker> markers;           /* <index, label> */
     ofColor backgroundColor;
     ofColor gridColor;
     ofRectangle signalRectangle;
@@ -58,6 +65,7 @@ private:
     void DrawGrid();
     void DrawRange();
     void DrawLabels();
+    void DrawMarkers();
 };
 
 #endif /* ofxOscilloscope_h */
