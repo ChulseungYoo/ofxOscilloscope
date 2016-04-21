@@ -36,13 +36,15 @@ void ofxOscilloscope::draw()
     }
     
     ofPoint cursorPosition = ofPoint(ofGetMouseX(), ofGetMouseY());
-    for (auto cursorValue:cursorValues)
-    {
-        ofSetColor(colors[cursorValue.first]);
-        ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, 25));
-    }
-    
-    ofDrawLine(cursorPosition.x, signalRectangle.getMinY(), cursorPosition.x, signalRectangle.getMaxY());
+	if (signalRectangle.inside(cursorPosition))
+	{
+		for (auto cursorValue : cursorValues)
+		{
+			ofSetColor(colors[cursorValue.first]);
+			ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, 25));
+		}
+		ofDrawLine(cursorPosition.x, signalRectangle.getMinY(), cursorPosition.x, signalRectangle.getMaxY());
+	}
     DrawMarkers();
     ofNoFill();
     ofSetColor(gridColor);
@@ -61,18 +63,30 @@ void ofxOscilloscope::AutoScale()
 {
     float localMaximum = 0;
     float localMinimum = 0;
+	bool islocalInitialValueSet = false;
     for (auto signal:signals)
     {
-        for (int index = offset; ((index < windowSize) && (index < signal.second->size())); ++index)
-        {
-            if(localMaximum < signal.second->at(index))
-            {
-                localMaximum = signal.second->at(index);
-            }
-            else if (localMinimum > signal.second->at(index))
-            {
-                localMinimum = signal.second->at(index);
-            }
+		int count = 0;
+		for (int index = signal.second->size() - 1; ((index >= 0) && (count <= windowSize)); index--)
+		{
+			count++;
+			if (!islocalInitialValueSet)
+			{
+				localMaximum = signal.second->at(index);
+				localMinimum = localMaximum;
+				islocalInitialValueSet = true;
+			}
+			else
+			{
+				if (localMaximum < signal.second->at(index))
+				{
+					localMaximum = signal.second->at(index);
+				}
+				else if (localMinimum > signal.second->at(index))
+				{
+					localMinimum = signal.second->at(index);
+				}
+			}
         }
     }
     
@@ -149,7 +163,7 @@ void ofxOscilloscope::CalcCursorValue()
         {
             if (signal.second->size() > cursorPointingIndex)
             {
-                cursorValues[signal.first] = signal.second->at(signal.second->size() - cursorPointingIndex);
+                cursorValues[signal.first] = signal.second->at(signal.second->size() - 1 - cursorPointingIndex);
             }
         }
     }
@@ -183,16 +197,4 @@ void ofxOscilloscope::DrawMarkers()
     }
     ofPopStyle();
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
