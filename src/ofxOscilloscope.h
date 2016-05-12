@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "ofMain.h"
+#include "ofxGui.h"
 
 typedef struct marker{
     string label;
@@ -19,28 +20,28 @@ typedef struct marker{
 
 class ofxOscilloscope{
 public:
-    ofxOscilloscope(ofRectangle signalRect)
-    : bShowCursorValue(true),
+	ofxOscilloscope(string title, ofRectangle rect)
+	: title(title),
+	bShowCursorValue(true),
     bDrawGrid(true),
     bAutoScale(true),
-    rangeMin(-10),
-    rangeMax(10),
-    windowSize(100),
+    windowSize(200),
     offset(0),
-    signalRectangle(signalRect),
     backgroundColor(ofColor::black),
     gridColor(ofColor::gray),
     gridInterval(50)
     {
-        
+		calculateRects(rect);
     }
     void update();
     void draw();
-    void assignSignals(string label, vector<float>* signal, ofColor color);
+    void assignSignals(string rangeGroup, string label, vector<float>* signal, ofColor color);
     void AddMarker(string markerLabel, ofColor color);
     
 private:
-    map<string, vector<float>*> signals;
+	string title;
+    map<string/*range*/, map<string, vector<float>*>> signals;
+	map<string, ofParameter<bool>> signalToggles;
     map<string, ofColor> colors;
     map<string, ofPolyline> graphs;
     map<string, float> cursorValues;
@@ -48,16 +49,19 @@ private:
     ofColor backgroundColor;
     ofColor gridColor;
     ofRectangle signalRectangle;
-    
+	ofRectangle controlRectangle;
+	ofRectangle titleRectangle;
+
+	ofxPanel controlPanel;
     bool bShowCursorValue;
     bool bDrawGrid;
     bool bAutoScale;
-    float rangeMin;
-    float rangeMax;
+	map<string, ofVec2f> ranges;
     int windowSize;
     int offset;
     float gridInterval;
     
+	void calculateRects(ofRectangle rect);
     void AutoScale();
     void CalcGraph();
     void valueToRect();
@@ -66,6 +70,8 @@ private:
     void DrawRange();
     void DrawLabels();
     void DrawMarkers();
+	void DrawControl();
+	void DrawGraphs();
 };
 
 #endif /* ofxOscilloscope_h */
