@@ -79,25 +79,28 @@ void ofxOscilloscope::AutoScale()
 	{
 		for (auto signal : rangeGroup.second)
 		{
-			int count = 0;
-			for (int index = signal.second->size() - 1; ((index >= 0) && (count <= windowSize)); index--)
+			if (true == signalToggles[signal.first])
 			{
-				count++;
-				if (!islocalInitialValueSet)
+				int count = 0;
+				for (int index = signal.second->size() - 1; ((index >= 0) && (count <= windowSize)); index--)
 				{
-					localMaximum = signal.second->at(index);
-					localMinimum = localMaximum;
-					islocalInitialValueSet = true;
-				}
-				else
-				{
-					if (localMaximum < signal.second->at(index))
+					count++;
+					if (!islocalInitialValueSet)
 					{
 						localMaximum = signal.second->at(index);
+						localMinimum = localMaximum;
+						islocalInitialValueSet = true;
 					}
-					else if (localMinimum > signal.second->at(index))
+					else
 					{
-						localMinimum = signal.second->at(index);
+						if (localMaximum < signal.second->at(index))
+						{
+							localMaximum = signal.second->at(index);
+						}
+						else if (localMinimum > signal.second->at(index))
+						{
+							localMinimum = signal.second->at(index);
+						}
 					}
 				}
 			}
@@ -171,7 +174,6 @@ void ofxOscilloscope::DrawLabels()
 			ofDrawBitmapString(signal.first, pos += ofPoint(100, 0));
 		}
 	}
-	
     ofPopStyle();
 }
 
@@ -239,6 +241,7 @@ void ofxOscilloscope::calculateRects(ofRectangle rect)
 	controlRectangle.set(rect.getTopLeft(), 200, rect.getHeight());
 	signalRectangle.set(controlRectangle.getTopRight(), rect.getBottomRight());
 	controlPanel.setup(title, title + "_setting.xml", controlRectangle.getLeft(), controlRectangle.getTop());
+	controlPanel.add(windowSize.set("WindowSize", 200, 100, 500));
 }
 
 void ofxOscilloscope::DrawControl()

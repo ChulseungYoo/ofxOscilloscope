@@ -57,7 +57,7 @@ private:
     bool bDrawGrid;
     bool bAutoScale;
 	map<string, ofVec2f> ranges;
-    int windowSize;
+    ofParameter<int> windowSize;
     int offset;
     float gridInterval;
     
