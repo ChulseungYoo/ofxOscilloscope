@@ -35,7 +35,8 @@ public:
     }
     void update();
     void draw();
-    void assignSignals(string rangeGroup, string label, vector<float>* signal, ofColor color);
+	ofRectangle getRect() { return entireRect; }
+	void assignSignals(string rangeGroup, string label, vector<float>* signal, ofColor color);
     void AddMarker(string markerLabel, ofColor color);
     
 private:
@@ -48,6 +49,7 @@ private:
     map<int, tMarker> markers;           /* <index, label> */
     ofColor backgroundColor;
     ofColor gridColor;
+	ofRectangle entireRect;
     ofRectangle signalRectangle;
 	ofRectangle controlRectangle;
 	ofRectangle titleRectangle;
@@ -64,7 +66,6 @@ private:
 	void calculateRects(ofRectangle rect);
     void AutoScale();
     void CalcGraph();
-    void valueToRect();
     void CalcCursorValue();
     void DrawGrid();
     void DrawRange();

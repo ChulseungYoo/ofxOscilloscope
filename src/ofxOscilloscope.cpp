@@ -230,6 +230,7 @@ void ofxOscilloscope::DrawMarkers()
 
 void ofxOscilloscope::calculateRects(ofRectangle rect)
 {
+	entireRect = rect;
 	if (rect.getWidth() < 400)
 	{
 		ofLog(OF_LOG_WARNING, "Oscilloscope Width is small");
