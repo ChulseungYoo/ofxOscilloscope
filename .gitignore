@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +27,13 @@
 *.exe
 *.out
 *.app
+=======
+
+example1/bin/example1Debug.app/Contents/Frameworks/GLUT.framework/GLUT
+
+example1/bin/data/.gitkeep
+
+example1/bin/example1Debug.app/Contents/Frameworks/GLUT.framework/Headers
+
+example1/bin/example1Debug.app/Contents/Frameworks/GLUT.framework/Resources
+>>>>>>> release/ver0.1.1
