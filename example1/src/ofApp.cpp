@@ -5,9 +5,9 @@ void ofApp::setup(){
     ofBackground(ofColor::black);
     ofSetFrameRate(30);
     bPaused = false;
-    myScope = new ofxOscilloscope(ofRectangle(0, 0, ofGetWidth(),(ofGetHeight() / 2)));
-    myScope->assignSignals("sine signal", &sineSignal, ofColor::red);
-    myScope->assignSignals("cosine signal", &cosineSignal, ofColor::green);
+    myScope = new ofxOscilloscope("",ofRectangle(0, 0, ofGetWidth(),(ofGetHeight() / 2)));
+    myScope->assignSignals("1","sine signal", &sineSignal, ofColor::red);
+    myScope->assignSignals("1", "cosine signal", &cosineSignal, ofColor::green);
     
     gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
     gui->addToggle("Pause");
