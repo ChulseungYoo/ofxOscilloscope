@@ -30,25 +30,28 @@ void ofxOscilloscope::draw()
     DrawRange();
     DrawLabels();
 	DrawControl();
-	for (auto rangeGroup : signals)
+	int colorIndex = 0;
+	for (auto signal : (*signals))
 	{
-		for (auto signal:rangeGroup.second)
+		string label = signal.first;
+		if (signalToggles[label])
 		{
-			if (signalToggles[signal.first])
-			{
-				ofSetColor(colors[signal.first]);
-				graphs[signal.first].draw();
-			}
+			ofSetColor(colors[colorIndex++]);
+			graphs[label].draw();
 		}
 	}
      
 	ofPoint cursorPosition = ofPoint(ofGetMouseX(), ofGetMouseY());
 	if (signalRectangle.inside(cursorPosition))
 	{
+		int colorIndex = 0;
 		for (auto cursorValue : cursorValues)
 		{
-			ofSetColor(colors[cursorValue.first]);
-			ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, -15));
+			if (signalToggles[cursorValue.first])
+			{
+				ofSetColor(colors[colorIndex++]);
+				ofDrawBitmapString(ofToString(cursorValue.second), cursorPosition += ofPoint(0, -15));
+			}
 		}
 		ofSetColor(ofColor::white);
 		ofDrawLine(cursorPosition.x, signalRectangle.getMinY(), cursorPosition.x, signalRectangle.getMaxY());
@@ -60,79 +63,74 @@ void ofxOscilloscope::draw()
     ofPopStyle();
 }
 
-void ofxOscilloscope::assignSignals(string rangeGroup, string label, vector<float> *signal, ofColor color)
+void ofxOscilloscope::assignSignals(map<string, tSignalInfo> *signals)
 {
-    signals[rangeGroup].emplace(label, signal);
-    colors.emplace(label, color);
-    graphs.emplace(label, ofPolyline());
-	signalToggles.emplace(label, false);
-	controlPanel.add(signalToggles[label].set(label, false));
+	this->signals = signals;
+	for (auto signal : (*signals))
+	{
+		signalToggles.emplace(signal.first, false);
+		controlPanel.add(signalToggles[signal.first].set(signal.first, false));
+	}
 	controlPanel.loadFromFile(title + "_setting.xml");
 }
 
 void ofxOscilloscope::AutoScale()
 {
+#if 0
     float localMaximum = 0;
     float localMinimum = 0;
 	bool islocalInitialValueSet = false;
-	for (auto rangeGroup : signals)
+	for (auto signal : (*signals))
 	{
-		for (auto signal : rangeGroup.second)
+		string label = signal.first;
+		if (true == signalToggles[label])
 		{
-			if (true == signalToggles[signal.first])
+			int count = 0;
+			for (int index = signal.second->size() - 1; ((index >= 0) && (count <= windowSize)); index--)
 			{
-				int count = 0;
-				for (int index = signal.second->size() - 1; ((index >= 0) && (count <= windowSize)); index--)
+				count++;
+				if (!islocalInitialValueSet)
 				{
-					count++;
-					if (!islocalInitialValueSet)
+					localMaximum = signal.second->at(index);
+					localMinimum = localMaximum;
+					islocalInitialValueSet = true;
+				}
+				else
+				{
+					if (localMaximum < signal.second->at(index))
 					{
 						localMaximum = signal.second->at(index);
-						localMinimum = localMaximum;
-						islocalInitialValueSet = true;
 					}
-					else
+					else if (localMinimum > signal.second->at(index))
 					{
-						if (localMaximum < signal.second->at(index))
-						{
-							localMaximum = signal.second->at(index);
-						}
-						else if (localMinimum > signal.second->at(index))
-						{
-							localMinimum = signal.second->at(index);
-						}
+						localMinimum = signal.second->at(index);
 					}
 				}
 			}
 		}
-		ranges[rangeGroup.first].x = localMaximum;
-		ranges[rangeGroup.first].y = localMinimum;
-
 	}
-    
-    
+#endif
 }
 
 void ofxOscilloscope::CalcGraph()
 {
-	for (auto rangeGroup : signals)
+	for (auto signal:(*signals))
 	{
-		for (auto signal:rangeGroup.second)
+		int count = 0;
+		string label = signal.first;
+		tSignalInfo sig = signal.second;
+		graphs[label].clear();
+		for (vector<float>::reverse_iterator it = sig.signal->rbegin(); it != sig.signal->rend(); ++it)
 		{
-			int count = 0;
-			graphs[signal.first].clear();
-			for (vector<float>::reverse_iterator it = signal.second->rbegin(); it != signal.second->rend(); ++it)
+			if (count++ < windowSize)
 			{
-				if (count++ < windowSize)
-				{
-					float x = ofMap(count, 0, windowSize, signalRectangle.getMaxX(), signalRectangle.getMinX());
-					float y = ofMap((*it), ranges[rangeGroup.first].y, ranges[rangeGroup.first].x, signalRectangle.getMaxY(), signalRectangle.getMinY());
-					graphs[signal.first].addVertex(x, y);
-				}
-				else
-				{
-					break;
-				}
+				float x = ofMap(count, 0, windowSize, signalRectangle.getMaxX(), signalRectangle.getMinX());
+				float y = ofMap((*it), sig.min, sig.max, signalRectangle.getMaxY(), signalRectangle.getMinY());
+				graphs[label].addVertex(x, y);
+			}
+			else
+			{
+				break;
 			}
 		}
 	}
@@ -166,12 +164,14 @@ void ofxOscilloscope::DrawLabels()
 {
     ofPushStyle();
     ofPoint pos = signalRectangle.getBottomLeft() + ofPoint(0, -5);
-    for (auto rangeGroup:signals)
+		int colorIndex = 0;
+	for (auto signal : (*signals))
 	{
-		for (auto signal : rangeGroup.second)
+		string label = signal.first;
+		if (signalToggles[label])
 		{
-			ofSetColor(colors[signal.first]);
-			ofDrawBitmapString(signal.first, pos += ofPoint(100, 0));
+			ofSetColor(colors[colorIndex++]);
+			ofDrawBitmapString(label, pos += ofPoint(100, 0));
 		}
 	}
     ofPopStyle();
@@ -183,20 +183,18 @@ void ofxOscilloscope::CalcCursorValue()
     int cursorPointingIndex = (signalRectangle.getMaxX() - cursorPosition.x) / (signalRectangle.getWidth() / windowSize);
     if (signalRectangle.inside(cursorPosition))
     {
-		for (auto rangeGroup : signals)
+		for (auto signal : (*signals))
 		{
-			for (auto signal : rangeGroup.second)
+			string label = signal.first;
+			if (signalToggles[label])
 			{
-				if (signalToggles[signal.first])
+				if (signal.second.signal->size() > cursorPointingIndex)
 				{
-					if (signal.second->size() > cursorPointingIndex)
-					{
-						cursorValues[signal.first] = signal.second->at(signal.second->size() - 1 - cursorPointingIndex);
-					}
+					cursorValues[label] = signal.second.signal->at(signal.second.signal->size() - 1 - cursorPointingIndex);
 				}
 			}
 		}
-    }
+	}
     
 }
 
@@ -206,14 +204,17 @@ void ofxOscilloscope::AddMarker(string label, ofColor color)
     aMarker.color = color;
     aMarker.label = label;
     int index = 0;
-    if (!signals.empty())
+    if (!signals->empty())
     {
-        markers.emplace(signals.begin()->second.begin()->second->size(), aMarker);
+#if 0
+		markers.emplace(signals.begin()->second.begin()->second->size(), aMarker);
+#endif
     }
 }
 
 void ofxOscilloscope::DrawMarkers()
 {
+#if 0
     ofPushStyle();
     if (!markers.empty())
     {
@@ -226,6 +227,7 @@ void ofxOscilloscope::DrawMarkers()
         }
     }
     ofPopStyle();
+#endif
 }
 
 void ofxOscilloscope::calculateRects(ofRectangle rect)
