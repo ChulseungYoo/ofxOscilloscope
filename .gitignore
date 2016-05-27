@@ -34,3 +34,9 @@ example1/bin/data/.gitkeep
 example1/bin/example1Debug.app/Contents/Frameworks/GLUT.framework/Headers
 
 example1/bin/example1Debug.app/Contents/Frameworks/GLUT.framework/Resources
+example1/bin/
+example1/obj/
+example1/emptyExample.VC.VC.opendb
+example1/emptyExample.VC.db
+example1/Example1.VC.db
+example1/Example1.VC.VC.opendb

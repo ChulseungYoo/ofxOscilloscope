@@ -1,1 +1,3 @@
+ofxGui
 ofxDatGui
+ofxOscilloscope
