@@ -18,32 +18,51 @@ typedef struct marker{
     ofColor color;
 }tMarker;
 
+typedef struct SignalInfo {
+	float min;
+	float max;
+	vector<float>* signal;
+}tSignalInfo;
+
+
 class ofxOscilloscope{
 public:
 	ofxOscilloscope(string title, ofRectangle rect)
 	: title(title),
 	bShowCursorValue(true),
     bDrawGrid(true),
-    bAutoScale(true),
+    bAutoScale(false),
     windowSize(200),
     offset(0),
     backgroundColor(ofColor::black),
     gridColor(ofColor::gray),
+	signals(NULL),
     gridInterval(50)
     {
 		calculateRects(rect);
+		colors.push_back(ofColor::red);
+		colors.push_back(ofColor::green);
+		colors.push_back(ofColor::blue);
+		colors.push_back(ofColor::yellow);
+		colors.push_back(ofColor::cyan);
+		colors.push_back(ofColor::magenta);
+		colors.push_back(ofColor::white);
+		colors.push_back(ofColor::purple);
+		colors.push_back(ofColor::beige);
+		colors.push_back(ofColor::gray);
+		colors.push_back(ofColor::red);
     }
     void update();
     void draw();
 	ofRectangle getRect() { return entireRect; }
-	void assignSignals(string rangeGroup, string label, vector<float>* signal, ofColor color);
+	void assignSignals(map<string, SignalInfo>* signals);
     void AddMarker(string markerLabel, ofColor color);
     
 private:
 	string title;
-    map<string/*range*/, map<string, vector<float>*>> signals;
+	map<string, tSignalInfo> * signals;
 	map<string, ofParameter<bool>> signalToggles;
-    map<string, ofColor> colors;
+    vector<ofColor> colors;
     map<string, ofPolyline> graphs;
     map<string, float> cursorValues;
     map<int, tMarker> markers;           /* <index, label> */
