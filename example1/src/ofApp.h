@@ -24,8 +24,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofxOscilloscope * myScope;
-    vector<float> sineSignal;
-    vector<float> cosineSignal;
+	map<string, SignalInfo> data;
     
     bool bPaused;
     

@@ -6,9 +6,9 @@ void ofApp::setup(){
     ofSetFrameRate(30);
     bPaused = false;
     myScope = new ofxOscilloscope("",ofRectangle(0, 0, ofGetWidth(),(ofGetHeight() / 2)));
-    myScope->assignSignals("1","sine signal", &sineSignal, ofColor::red);
-    myScope->assignSignals("1", "cosine signal", &cosineSignal, ofColor::green);
-    
+	data["Sine"] = SignalInfo{ -1, 1, new vector<float> };
+	data["Cosine"] = SignalInfo{ -1, 1, new vector<float> };
+	myScope->assignSignals(&data);
     gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
     gui->addToggle("Pause");
     gui->onButtonEvent(this, &ofApp::onButtonEvent);
@@ -21,8 +21,8 @@ void ofApp::update(){
     static float i = 0;
     if (!bPaused)
     {
-        sineSignal.push_back(sin(i+=0.05));
-        cosineSignal.push_back(cos(i));
+        data["Sine"].signal->push_back(sin(i+=0.05));
+		data["Cosine"].signal->push_back(cos(i));
     }
     myScope->update();
 }
