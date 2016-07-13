@@ -170,7 +170,14 @@ void ofxOscilloscope::DrawLabels()
 		string label = signal.first;
 		if (signalToggles[label])
 		{
-			ofSetColor(colors[colorIndex++]);
+			if (colorIndex < colors.size())
+			{
+				ofSetColor(colors[colorIndex++]);
+			}
+			else
+			{
+				ofSetColor(ofColor::purple);
+			}
 			ofDrawBitmapString(label, pos += ofPoint(100, 0));
 		}
 	}
